@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const Moderator = require("../../models/Moderator");
+const User = require("../../models/User");
 
 class UserService {
   getUserByUsername = async (username) => {
@@ -22,6 +23,16 @@ class UserService {
       _id: id,
     });
     return user;
+  };
+
+  updateUserAuthor = async (walletAddress, isAuthor) => {
+    const result = await User.updateOne(
+      {
+        wallet_address: walletAddress,
+      },
+      { $set: { is_author: isAuthor } }
+    );
+    return result;
   };
 
   createUser = async (body) => {
