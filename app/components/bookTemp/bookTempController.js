@@ -1,3 +1,4 @@
+const authorService = require("../author/authorService");
 const bookTempService = require("./bookTempService");
 class BookTempController {
   //[GET] /book-temps
@@ -26,7 +27,9 @@ class BookTempController {
           bookTemp.tokenId
         );
 
-        // TODO: Send email notification to author
+        // Send email notification to author
+        const author = await authorService.getAuthorByAddress(bookTemp.author);
+        await bookTempService.sendAcceptedEmail(author, bookTemp.title);
 
         if (updateStatus && deleteStatus) {
           return res.status(200).json({
@@ -69,7 +72,9 @@ class BookTempController {
           bookTemp.tokenId
         );
 
-        // TODO: Send email notification to author
+        // Send email notification to author
+        const author = await authorService.getAuthorByAddress(bookTemp.author);
+        await bookTempService.sendRefusedEmail(author, bookTemp.title);
 
         if (updateStatus && deleteStatus) {
           return res.status(200).json({

@@ -1,5 +1,8 @@
 const BookTemp = require("../../models/BookTemp");
 const Book = require("../../models/Book");
+const PublishingBookRegistrationSuccess = require("../../../views/email/PublishingBookRegistrationSuccess");
+const PublishingBookRegistrationFail = require("../../../views/email/PublishingBookRegistrationFail");
+const sendEmail = require("../../utils/sendEmail");
 
 class BookTempService {
   getListBookTemps = async () => {
@@ -20,6 +23,29 @@ class BookTempService {
   deleteBookTemp = async (tokenId) => {
     const result = await BookTemp.deleteOne({ token_id: tokenId });
     return result;
+  };
+
+  sendAcceptedEmail = async (author, bookTitle) => {
+    try {
+      const subject = "[NFT BookStore] - Your NFT book is approved";
+      const html = PublishingBookRegistrationSuccess(
+        author.pseudonym,
+        bookTitle
+      );
+      await sendEmail(author.email, subject, html);
+    } catch (error) {
+      console.log("Send email error: " + error.message);
+    }
+  };
+
+  sendRefusedEmail = async (author, bookTitle) => {
+    try {
+      const subject = "[NFT BookStore] - Your NFT book is not approved";
+      const html = PublishingBookRegistrationFail(author.pseudonym, bookTitle);
+      await sendEmail(author.email, subject, html);
+    } catch (error) {
+      console.log("Send email error: " + error.message);
+    }
   };
 }
 
